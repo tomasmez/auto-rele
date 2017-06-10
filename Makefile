@@ -2,7 +2,7 @@
 DESTDIR="/"
 
 auto-rele: auto-rele.c auto-rele.h auto-rele-defaults.h
-	gcc auto-rele.c -liniparser -lwiringPi -lrt -lsystemd -o auto-rele
+	gcc auto-rele.c -liniparser -lwiringPi -lrt -lsystemd -lm -o auto-rele
 
 
 install: auto-rele auto-rele.conf auto-rele.service

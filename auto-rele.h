@@ -58,6 +58,8 @@
 
 typedef struct channel channel_t;
 
+/* returns a timestamp in milliseconds */
+long timestamp_in_ms(void);
 
 /* loads the configuration from the auto-rele.conf file
  * At some point we must free all the memory used

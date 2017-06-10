@@ -17,6 +17,7 @@
 #include <stdarg.h>
 #include <errno.h>
 #include <limits.h>
+#include <math.h>
 struct channel {
 	const char* name;
 	int pin;
@@ -37,21 +38,90 @@ static volatile int stay_in_the_loop = 1;
 static timer_t ticker=NULL;
 int daemonized=0;
 /* our ISR and signal handlers */
+
+/* each ISR must:
+ *    check with previous timestamp. if less than debounce time. ignore.
+ *    debounce.
+ *    If triggered: run the action and timestamp for further checking.
+ */
 void
 ch1_isr(void) {
-	stay_in_the_loop=9;
+	static long prev_timestamp=0;
+	long timestamp;
+
+	timestamp=timestamp_in_ms();
+
+	
+	/* this is a phantom trigger */
+	if(timestamp - prev_timestamp < DEBOUNCE_MS + 100)
+		return; 
+	
+	if(debounce(&ch1)) {
+		info("%s: ISR triggered\n\t prev_timestamp=%ld\n\ttimestamp=%ld\n",ch1.name,prev_timestamp,timestamp);
+		flip_manual(&ch1);
+	}
+
+	prev_timestamp = timestamp;
+//	stay_in_the_loop=9;
 }
 
 void
 ch2_isr(void) {
-	stay_in_the_loop=10;
+	static long prev_timestamp=0;
+	long timestamp;
+
+	timestamp=timestamp_in_ms();
+
+	
+	/* this is a phantom trigger */
+	if(timestamp - prev_timestamp < DEBOUNCE_MS + 100)
+		return; 
+	
+	if(debounce(&ch2)){
+		info("%s: ISR triggered\n\t prev_timestamp=%ld\n\ttimestamp=%ld\n",ch2.name,prev_timestamp,timestamp);
+		flip_manual(&ch2);
+	}
+
+	prev_timestamp = timestamp;
+//	stay_in_the_loop=10;
 }
 
 void
 ch3_isr(void) {
-	stay_in_the_loop=11;
+	static long prev_timestamp=0;
+	long timestamp;
+
+	timestamp=timestamp_in_ms();
+
+	
+	/* this is a phantom trigger */
+	if(timestamp - prev_timestamp < DEBOUNCE_MS + 100)
+		return; 
+	
+	if(debounce(&ch3)) {
+		info("%s: ISR triggered\n\t prev_timestamp=%ld\n\ttimestamp=%ld\n",ch3.name,prev_timestamp,timestamp);
+		flip_manual(&ch3);
+	}
+
+	prev_timestamp = timestamp;
+//	stay_in_the_loop=11;
 }
 
+long
+timestamp_in_ms (void)
+{
+    long            ms; // Milliseconds
+    time_t          s;  // Seconds
+    struct timespec spec;
+    long	ret; 
+    clock_gettime(CLOCK_MONOTONIC_RAW, &spec);
+    s  = spec.tv_sec;
+    ms = round(spec.tv_nsec / 1.0e6); // Convert nanoseconds to milliseconds
+
+    ret = s*1000 + ms ;
+    /* trying to go around the wraparound corner case*/
+	return (ret + DEBOUNCE_MS+100 < DEBOUNCE_MS+100 ? DEBOUNCE_MS+100 : ret );
+}
 
 static void child_handler(int signum) {
 	switch(signum) {
@@ -597,7 +667,7 @@ main(int argc, char *argv[]) {
 			     stay_in_the_loop = 1;
 			     break;
 			default:
-				delay(200);
+				delay(1000);
 		}
 
 	}
