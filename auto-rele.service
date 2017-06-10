@@ -1,0 +1,14 @@
+[Unit]
+Description=Auto-rele service for the auto-rele daemon
+
+[Service]
+#ExecStart=/usr/bin/auto-rele
+ExecStart=/usr/bin/auto-rele -D
+TimeoutStopSec=10
+KillMode=process
+KillSignal=SIGINT
+ExecReload=/bin/kill -HUP $MAINPID
+PIDFile=/run/auto-rele.pid
+
+[Install]
+WantedBy=multi-user.target
