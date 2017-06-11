@@ -59,9 +59,9 @@ ch1_isr(void) {
 	if(debounce(&ch1)) {
 		info("%s: ISR triggered\n\t prev_timestamp=%ld\n\ttimestamp=%ld\n",ch1.name,prev_timestamp,timestamp);
 		flip_manual(&ch1);
+		prev_timestamp = timestamp;
 	}
 
-	prev_timestamp = timestamp;
 //	stay_in_the_loop=9;
 }
 
@@ -80,9 +80,9 @@ ch2_isr(void) {
 	if(debounce(&ch2)){
 		info("%s: ISR triggered\n\t prev_timestamp=%ld\n\ttimestamp=%ld\n",ch2.name,prev_timestamp,timestamp);
 		flip_manual(&ch2);
+		prev_timestamp = timestamp;
 	}
 
-	prev_timestamp = timestamp;
 //	stay_in_the_loop=10;
 }
 
@@ -101,9 +101,9 @@ ch3_isr(void) {
 	if(debounce(&ch3)) {
 		info("%s: ISR triggered\n\t prev_timestamp=%ld\n\ttimestamp=%ld\n",ch3.name,prev_timestamp,timestamp);
 		flip_manual(&ch3);
+		prev_timestamp = timestamp;
 	}
 
-	prev_timestamp = timestamp;
 //	stay_in_the_loop=11;
 }
 
