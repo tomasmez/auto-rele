@@ -53,7 +53,7 @@ ch1_isr(void) {
 
 	
 	/* this is a phantom trigger */
-	if(timestamp - prev_timestamp < DEBOUNCE_MS + 100)
+	if(labs(timestamp - prev_timestamp) < DEBOUNCE_MS + 100)
 		return; 
 	
 	if(debounce(&ch1)) {
@@ -62,7 +62,6 @@ ch1_isr(void) {
 		prev_timestamp = timestamp;
 	}
 
-//	stay_in_the_loop=9;
 }
 
 void
@@ -74,7 +73,7 @@ ch2_isr(void) {
 
 	
 	/* this is a phantom trigger */
-	if(timestamp - prev_timestamp < DEBOUNCE_MS + 100)
+	if(labs(timestamp - prev_timestamp) < DEBOUNCE_MS + 100)
 		return; 
 	
 	if(debounce(&ch2)){
@@ -83,7 +82,6 @@ ch2_isr(void) {
 		prev_timestamp = timestamp;
 	}
 
-//	stay_in_the_loop=10;
 }
 
 void
@@ -95,7 +93,7 @@ ch3_isr(void) {
 
 	
 	/* this is a phantom trigger */
-	if(timestamp - prev_timestamp < DEBOUNCE_MS + 100)
+	if(labs(timestamp - prev_timestamp) < DEBOUNCE_MS + 100)
 		return; 
 	
 	if(debounce(&ch3)) {
@@ -104,7 +102,6 @@ ch3_isr(void) {
 		prev_timestamp = timestamp;
 	}
 
-//	stay_in_the_loop=11;
 }
 
 long
