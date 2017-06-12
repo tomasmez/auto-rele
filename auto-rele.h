@@ -95,9 +95,6 @@ int debounce(channel_t *ch);
  */
 void flip_manual(channel_t *ch);
 
-/* make the program a daemon */
-void daemonize(void);
-
 void update_output(channel_t *ch);
 /* function called to run the calendar.
  * it is called by the signal_handler when the timer overruns

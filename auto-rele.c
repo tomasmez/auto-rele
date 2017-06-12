@@ -1,7 +1,3 @@
-// idea for a daemon is 
-// Taken from http://www.danielhall.me/2010/01/writing-a-daemon-in-c/
-//
-
 #include <unistd.h>
 #include <stdio.h>
 #include <wiringPi.h>
@@ -18,6 +14,9 @@
 #include <errno.h>
 #include <limits.h>
 #include <math.h>
+
+
+
 struct channel {
 	const char* name;
 	int pin;
@@ -37,6 +36,7 @@ channel_t ch1,ch2,ch3;
 static volatile int stay_in_the_loop = 1;
 static timer_t ticker=NULL;
 int daemonized=0;
+
 /* our ISR and signal handlers */
 
 /* each ISR must:
@@ -126,8 +126,6 @@ timestamp_in_ms (void)
 static void child_handler(int signum) {
 	switch(signum) {
 		case SIGALRM: run_calendar(); break;
-		//case SIGUSR1: stay_in_the_loop = 0; break;
-		//case SIGCHLD: stay_in_the_loop = 0; break;
 		case SIGTERM: stay_in_the_loop = 0; break;
 		case SIGINT: stay_in_the_loop = 0; break;
 		case SIGHUP: stay_in_the_loop = 2; break;
@@ -445,61 +443,6 @@ flip_manual(channel_t *ch) {
 	return;
 }
 
-/* this function apparently is not needed when
- * using systemd.
- */
-void
-daemonize(void) {
-
-	pid_t pid,sid;
-	/* Clone ourselves to make a child */  
-	pid = fork(); 
-	 
-	/* If the pid is less than zero,
-	 *    something went wrong when forking */
-	if (pid < 0) {
-		    exit(EXIT_FAILURE);
-	}
-	 
-	/* If the pid we got back was greater
-	 *    than zero, then the clone was
-	 *       successful and we are the parent. */
-	if (pid > 0) {
-		printf("Daemon pid=%d\n",pid);
-		    exit(EXIT_SUCCESS);
-	}
-	 
-	/* If execution reaches this point we are the child */
-
-
-
-	/* Set the umask to zero */
-	umask(0);
-
-
-	/* Try to create our own process group */
-	sid = setsid();
-	if (sid < 0) {
-		    //syslog(LOG_ERR, "Could not create process group\n");
-			exit(EXIT_FAILURE);
-	}
-
-	/* Change the current working directory */
-	if ((chdir("/")) < 0) {
-			exit(EXIT_FAILURE);
-	}
-
-
-	/* Close the standard file descriptors */
-	// not needed for systemd
-//	close(STDIN_FILENO);
-//	close(STDOUT_FILENO);
-//	close(STDERR_FILENO);
-	daemonized=1;	
-
-
-}
-
 
 void
 update_output(channel_t *ch) {
@@ -546,8 +489,6 @@ set_timer(int secs) {
  */
 void
 run_calendar(void) {
-	static int i=1;
-	//info("running  calendar for %i time\n",i++);
      update_output(&ch1);
      update_output(&ch2);
      update_output(&ch3);
@@ -587,8 +528,6 @@ main(int argc, char *argv[]) {
 			daemonized=1; //daemonize();
 
 	/* Trap signals that we expect to recieve */
-	//signal(SIGCHLD,child_handler);
-	//signal(SIGUSR1,child_handler);
 	signal(SIGALRM,child_handler);
 	signal(SIGHUP,child_handler);
 	signal(SIGTERM,child_handler);
@@ -641,31 +580,6 @@ main(int argc, char *argv[]) {
 				//sd_notify(0, "READY=1");
 				signal(SIGALRM,&child_handler);
 				break;
-			case 9:
-			     info("%s: ISR triggered\n",ch1.name);
-			     /*make debounce and if applies. flip value of channel.*/
-			     if(debounce(&ch1)) {
-				     signal(SIGALRM,SIG_IGN);
-				     flip_manual(&ch1);
-				     ch1.man_flag=ch1.value;
-				     signal(SIGALRM,&child_handler);
-			     }
-			     stay_in_the_loop = 1;
-			     break;
-			case 10:
-			     info("%s: ISR triggered\n",ch2.name);
-			     /*make debounce and if applies. flip value of channel.*/
-			     if(debounce(&ch2))
-				     flip_manual(&ch2);
-			     stay_in_the_loop = 1;
-			     break;
-			case 11:
-			     info("%s: ISR triggered\n",ch3.name);
-			     /*make debounce and if applies. flip value of channel.*/
-			     if(debounce(&ch3))
-				     flip_manual(&ch3);
-			     stay_in_the_loop = 1;
-			     break;
 			default:
 				delay(1000);
 		}
