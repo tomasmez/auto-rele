@@ -548,7 +548,7 @@ main(int argc, char *argv[]) {
 
 	set_timer(1); //we set the calendar timer to 1sec.
 
-	int i,sleep_iteration;
+	int i;
 
 	if(daemonized) sd_notify(0, "READY=1");
 
