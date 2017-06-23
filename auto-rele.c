@@ -77,7 +77,7 @@ ch2_isr(void) {
 		return; 
 	
 	if(debounce(&ch2)){
-		info("%s: ISR triggered\n",ch1.name);
+		info("%s: ISR triggered\n",ch2.name);
 		flip_manual(&ch2);
 		prev_timestamp = timestamp;
 	}
@@ -97,7 +97,7 @@ ch3_isr(void) {
 		return; 
 	
 	if(debounce(&ch3)) {
-		info("%s: ISR triggered\n",ch1.name);
+		info("%s: ISR triggered\n",ch3.name);
 		flip_manual(&ch3);
 		prev_timestamp = timestamp;
 	}
