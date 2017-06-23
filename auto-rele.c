@@ -18,17 +18,17 @@
 
 
 struct channel {
-	const char* name;
-	int pin;
-	int enable;
-	int man_enable;
-	int m_pin;
-	int man_flag;
-	const char *on_time; 
-	const char *off_time;
-	int on_min,off_min;
+	const char* name; /* given name */
+	int pin; /* output pin */
+	int enable; /* enabled status */
+	int man_enable; /* manual button enabled status */
+	int m_pin; /* manual input pin */
+	int man_flag; /* internal manual flag. set when triggered */
+	const char *on_time; /* time of relay-on */
+	const char *off_time; /* time of relay-off */
+	int on_min,off_min; /* previous vars in minutes */
 	int value; /* channel status */
-	void (*isr) ();
+	void (*isr) (); /* interrupt function for manual pin */
 };
 
 /* We define our globals here */
